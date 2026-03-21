@@ -36,3 +36,7 @@ To be documented once scaffold is started.
 ## Deployment
 
 Single binary + systemd unit behind nginx. See [todo.md](todo.md) for the full task list.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
