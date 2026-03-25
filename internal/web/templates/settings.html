@@ -1,0 +1,56 @@
+{{define "content"}}
+<div class="page-header">
+  <p class="page-header__label">account</p>
+  <h1 class="page-header__title">Settings</h1>
+</div>
+
+<section class="section">
+  <div class="term-window term-window--narrow">
+    <div class="term-header">
+      <div class="term-controls">
+        <button class="term-btn term-btn--close">✕</button>
+        <button class="term-btn">−</button>
+        <button class="term-btn">□</button>
+      </div>
+      <span class="term-title">account-settings</span>
+    </div>
+    <div class="term-body">
+
+      {{with .Data}}{{if .Error}}<p class="login-error" style="margin-bottom:1rem">{{.Error}}</p>{{end}}{{end}}
+
+      <p class="section__title" style="margin-bottom:1rem">Email Address</p>
+      <form method="POST" action="/settings/email" class="login-form" style="margin-bottom:2rem">
+        <div class="field">
+          <label class="field__label" for="email">email</label>
+          <input class="field__input" type="email" id="email" name="email"
+                 value="{{with .Data}}{{.Email}}{{end}}" autocomplete="email" required>
+        </div>
+        <button type="submit" class="btn btn--primary btn--sm">update email</button>
+      </form>
+
+      <hr style="border:none;border-top:1px solid var(--border);margin-bottom:1.5rem">
+
+      <p class="section__title" style="margin-bottom:1rem">Change Password</p>
+      <form method="POST" action="/settings/password" class="login-form">
+        <div class="field">
+          <label class="field__label" for="current">current password</label>
+          <input class="field__input" type="password" id="current" name="current"
+                 autocomplete="current-password" required>
+        </div>
+        <div class="field">
+          <label class="field__label" for="password">new password</label>
+          <input class="field__input" type="password" id="password" name="password"
+                 autocomplete="new-password" minlength="8" required>
+        </div>
+        <div class="field">
+          <label class="field__label" for="confirm">confirm new password</label>
+          <input class="field__input" type="password" id="confirm" name="confirm"
+                 autocomplete="new-password" minlength="8" required>
+        </div>
+        <button type="submit" class="btn btn--primary btn--sm">change password</button>
+      </form>
+
+    </div>
+  </div>
+</section>
+{{end}}

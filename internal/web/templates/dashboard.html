@@ -1,0 +1,94 @@
+{{define "content"}}
+<div class="page-header">
+  <p class="page-header__label">overview</p>
+  <h1 class="page-header__title">Dashboard</h1>
+</div>
+
+{{with .Data}}
+
+{{/* --- Service Status --- */}}
+<section class="section">
+  <div class="term-window">
+    <div class="term-header">
+      <div class="term-controls"><button class="term-btn term-btn--close">✕</button><button class="term-btn">−</button><button class="term-btn">□</button></div>
+      <span class="term-title">service-status.sh</span>
+    </div>
+    <div class="term-body">
+      {{if .Monitors}}
+        {{range .Monitors}}
+        <div class="status-row">
+          <span class="status-tag {{if .Up}}status-tag--ok{{else}}status-tag--err{{end}}">
+            {{if .Up}}[OK]{{else}}[!!]{{end}}
+          </span>
+          <span class="status-name">{{.Label}}</span>
+          <span class="status-dots"></span>
+          <span class="status-meta">
+            {{if .Up}}up{{else}}down{{end}}
+            &nbsp;·&nbsp;
+            {{pct .Uptime30d}} 30d
+            &nbsp;·&nbsp;
+            {{if .LastChecked.IsZero}}never checked{{else}}{{ago .LastChecked}}{{end}}
+          </span>
+        </div>
+        {{end}}
+      {{else}}
+        <p class="term-empty">No services configured. Contact support to get services added to your account.</p>
+      {{end}}
+    </div>
+  </div>
+</section>
+
+{{/* --- SSL Summary --- */}}
+<section class="section">
+  <div class="section__header">
+    <h2 class="section__title">SSL Certificates</h2>
+    <a href="/ssl" class="btn btn--ghost btn--sm">manage →</a>
+  </div>
+  {{if .Domains}}
+  <div class="card-grid">
+    {{range .Domains}}
+    <div class="ssl-card {{if .IsValid}}{{if gt .DaysRemaining 30}}ssl-card--ok{{else if ge .DaysRemaining 14}}ssl-card--warn{{else}}ssl-card--crit{{end}}{{else}}ssl-card--crit{{end}}">
+      <span class="ssl-domain">{{.Domain}}</span>
+      {{if .IsValid}}
+        <span class="ssl-days">{{.DaysRemaining}}d</span>
+        <span class="ssl-exp">expires {{formatDate .ExpiresAt}}</span>
+      {{else if .CheckError}}
+        <span class="ssl-err">{{.CheckError}}</span>
+      {{else}}
+        <span class="ssl-err">not yet checked</span>
+      {{end}}
+    </div>
+    {{end}}
+  </div>
+  {{else}}
+  <p class="muted"><a href="/ssl">Add a domain</a> to track SSL expiry.</p>
+  {{end}}
+</section>
+
+{{/* --- Recent Tickets --- */}}
+<section class="section">
+  <div class="section__header">
+    <h2 class="section__title">Support Tickets</h2>
+    <a href="/tickets" class="btn btn--ghost btn--sm">view all →</a>
+  </div>
+  {{if .Tickets}}
+  <table class="table">
+    <thead><tr><th>#</th><th>subject</th><th>status</th><th>updated</th></tr></thead>
+    <tbody>
+    {{range .Tickets}}
+    <tr>
+      <td class="text-dim">#{{.ID}}</td>
+      <td><a href="/tickets/{{.ID}}" class="link">{{.Subject}}</a></td>
+      <td><span class="badge badge--{{.Status}}">{{.Status}}</span></td>
+      <td class="text-dim">{{ago .UpdatedAt}}</td>
+    </tr>
+    {{end}}
+    </tbody>
+  </table>
+  {{else}}
+  <p class="muted">No tickets. <a href="/tickets" class="link">Open one</a> if you need help.</p>
+  {{end}}
+</section>
+
+{{end}}
+{{end}}

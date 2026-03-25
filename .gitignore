@@ -1,0 +1,7 @@
+arcline-portal
+arcline-portal-linux-amd64
+arcline-portal-linux-arm64
+*.db
+.env
+*.test
+*.out

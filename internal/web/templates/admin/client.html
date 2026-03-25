@@ -1,0 +1,76 @@
+{{define "content"}}
+{{with .Data}}
+<div class="page-header">
+  <p class="page-header__label"><a href="/admin" class="link">admin</a> / clients</p>
+  <h1 class="page-header__title">{{.Client.DisplayName}}</h1>
+  <p class="text-dim td-mono">@{{.Client.Username}}</p>
+</div>
+
+<section class="section">
+  <div class="section__header">
+    <h2 class="section__title">Service Monitors</h2>
+  </div>
+  <p class="muted" style="margin-bottom:1rem">
+    Monitor names must match exactly what's configured in arcline-uptime.
+  </p>
+
+  <form method="POST" action="/admin/clients/{{.Client.ID}}/monitors/add" class="inline-form">
+    <input class="field__input" type="text" name="monitor_name"
+           placeholder="monitor name (from arcline-uptime)" required>
+    <input class="field__input" type="text" name="label"
+           placeholder="display label (optional)">
+    <button type="submit" class="btn btn--primary btn--sm">+ add monitor</button>
+  </form>
+
+  {{if .Monitors}}
+  <table class="table" style="margin-top:1rem">
+    <thead><tr><th>monitor name</th><th>label</th><th></th></tr></thead>
+    <tbody>
+    {{range .Monitors}}
+    <tr>
+      <td class="td-mono">{{.MonitorName}}</td>
+      <td class="text-dim">{{if .Label}}{{.Label}}{{else}}&mdash;{{end}}</td>
+      <td>
+        <form method="POST" action="/admin/clients/{{$.Data.Client.ID}}/monitors/delete" style="display:inline">
+          <input type="hidden" name="monitor_id" value="{{.ID}}">
+          <button type="submit" class="btn-link btn-link--danger">remove</button>
+        </form>
+      </td>
+    </tr>
+    {{end}}
+    </tbody>
+  </table>
+  {{else}}
+  <p class="muted">No monitors assigned.</p>
+  {{end}}
+</section>
+
+<section class="section">
+  <h2 class="section__title">Domains</h2>
+  {{if .Domains}}
+  <table class="table">
+    <thead><tr><th>domain</th><th>expires</th><th>days</th><th>status</th></tr></thead>
+    <tbody>
+    {{range .Domains}}
+    <tr>
+      <td class="td-mono">{{.Domain}}</td>
+      <td class="text-dim">{{if .IsValid}}{{formatDate .ExpiresAt}}{{else}}&mdash;{{end}}</td>
+      <td class="td-mono">{{if .IsValid}}{{.DaysRemaining}}d{{else}}&mdash;{{end}}</td>
+      <td>
+        {{if .IsValid}}
+          {{if gt .DaysRemaining 30}}<span class="badge badge--ok">OK</span>
+          {{else if ge .DaysRemaining 14}}<span class="badge badge--warn">EXPIRING</span>
+          {{else}}<span class="badge badge--err">CRITICAL</span>{{end}}
+        {{else if .CheckError}}<span class="badge badge--err">ERROR</span>
+        {{else}}<span class="badge badge--dim">PENDING</span>{{end}}
+      </td>
+    </tr>
+    {{end}}
+    </tbody>
+  </table>
+  {{else}}
+  <p class="muted">No domains tracked for this client.</p>
+  {{end}}
+</section>
+{{end}}
+{{end}}

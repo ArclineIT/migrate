@@ -1,0 +1,97 @@
+{{define "content"}}
+<div class="page-header">
+  <p class="page-header__label">admin</p>
+  <h1 class="page-header__title">Admin Overview</h1>
+</div>
+
+{{with .Data}}
+
+<section class="section">
+  <div class="section__header">
+    <h2 class="section__title">Clients</h2>
+  </div>
+
+  <div class="term-window term-window--narrow">
+    <div class="term-header">
+      <div class="term-controls"><button class="term-btn term-btn--close">✕</button><button class="term-btn">−</button><button class="term-btn">□</button></div>
+      <span class="term-title">new-client</span>
+    </div>
+    <div class="term-body">
+      <form method="POST" action="/admin/clients/new" class="admin-form">
+        <div class="form-row">
+          <div class="field">
+            <label class="field__label" for="username">username</label>
+            <input class="field__input" type="text" id="username" name="username" required>
+          </div>
+          <div class="field">
+            <label class="field__label" for="display_name">display name</label>
+            <input class="field__input" type="text" id="display_name" name="display_name" required>
+          </div>
+          <div class="field">
+            <label class="field__label" for="email">email</label>
+            <input class="field__input" type="email" id="email" name="email">
+          </div>
+          <div class="field">
+            <label class="field__label" for="password">password</label>
+            <input class="field__input" type="password" id="password" name="password" minlength="8" required>
+          </div>
+          <div class="field field--check">
+            <label class="checkbox-label">
+              <input type="checkbox" name="is_admin" value="1"> admin
+            </label>
+          </div>
+        </div>
+        <button type="submit" class="btn btn--primary btn--sm">create client</button>
+      </form>
+    </div>
+  </div>
+
+  {{if .Clients}}
+  <table class="table">
+    <thead><tr><th>username</th><th>display name</th><th>role</th><th>joined</th><th></th></tr></thead>
+    <tbody>
+    {{range .Clients}}
+    <tr>
+      <td class="td-mono">{{.Username}}</td>
+      <td><a href="/admin/clients/{{.ID}}" class="link">{{.DisplayName}}</a></td>
+      <td>{{if .IsAdmin}}<span class="badge badge--admin">admin</span>{{else}}<span class="badge badge--dim">client</span>{{end}}</td>
+      <td class="text-dim">{{formatDate .CreatedAt}}</td>
+      <td>
+        <form method="POST" action="/admin/clients/{{.ID}}/delete" style="display:inline">
+          <button type="submit" class="btn-link btn-link--danger"
+                  onclick="return confirm('Delete {{.DisplayName}}? This cannot be undone.')">delete</button>
+        </form>
+      </td>
+    </tr>
+    {{end}}
+    </tbody>
+  </table>
+  {{else}}
+  <p class="muted">No clients yet.</p>
+  {{end}}
+</section>
+
+<section class="section">
+  <h2 class="section__title">All Tickets</h2>
+  {{if .Tickets}}
+  <table class="table">
+    <thead><tr><th>#</th><th>subject</th><th>client</th><th>status</th><th>updated</th></tr></thead>
+    <tbody>
+    {{range .Tickets}}
+    <tr>
+      <td class="text-dim td-mono">#{{.ID}}</td>
+      <td><a href="/tickets/{{.ID}}" class="link">{{.Subject}}</a></td>
+      <td class="text-dim">{{.ClientName}}</td>
+      <td><span class="badge badge--{{.Status}}">{{.Status}}</span></td>
+      <td class="text-dim">{{ago .UpdatedAt}}</td>
+    </tr>
+    {{end}}
+    </tbody>
+  </table>
+  {{else}}
+  <p class="muted">No tickets.</p>
+  {{end}}
+</section>
+
+{{end}}
+{{end}}

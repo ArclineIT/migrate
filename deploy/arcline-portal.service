@@ -1,0 +1,23 @@
+[Unit]
+Description=Arcline Portal — customer dashboard
+After=network.target
+
+[Service]
+Type=simple
+User=arcline
+Group=arcline
+WorkingDirectory=/opt/arcline-portal
+EnvironmentFile=/opt/arcline-portal/.env
+ExecStart=/opt/arcline-portal/arcline-portal
+Restart=on-failure
+RestartSec=5s
+
+# Hardening
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/opt/arcline-portal
+
+[Install]
+WantedBy=multi-user.target

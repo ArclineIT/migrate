@@ -1,0 +1,42 @@
+{{define "content"}}
+<div class="login-wrap">
+  <div class="term-window login-box">
+    <div class="term-header">
+      <div class="term-controls"><button class="term-btn term-btn--close">✕</button><button class="term-btn">−</button><button class="term-btn">□</button></div>
+      <span class="term-title">arcline-portal</span>
+    </div>
+    <div class="term-body">
+      <div class="login-logo">
+        <svg width="40" height="40" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <path d="M5 27L16 5L27 27" stroke="#00c8f0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9 20H23" stroke="#00c8f0" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        <span class="login-wordmark"><span class="text-dim">[</span>arcline<span class="text-dim">]</span></span>
+      </div>
+
+      <p class="login-prompt">$ ssh client@portal.arclineit.com</p>
+
+      {{if .Data}}{{with .Data}}
+        {{if .Error}}<p class="login-error">{{.Error}}</p>{{end}}
+      {{end}}{{end}}
+
+      <form method="POST" action="/login" class="login-form">
+        <div class="field">
+          <label class="field__label" for="username">username</label>
+          <input class="field__input" type="text" id="username" name="username"
+                 autocomplete="username" autofocus required>
+        </div>
+        <div class="field">
+          <label class="field__label" for="password">password</label>
+          <input class="field__input" type="password" id="password" name="password"
+                 autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn btn--primary btn--full">authenticate<span class="cursor">▋</span></button>
+      </form>
+      <p class="login-prompt" style="margin-top:1rem">
+        <a href="/forgot" class="link">forgot password?</a>
+      </p>
+    </div>
+  </div>
+</div>
+{{end}}

@@ -1,0 +1,71 @@
+{{define "content"}}
+<div class="page-header">
+  <p class="page-header__label">monitoring</p>
+  <h1 class="page-header__title">SSL Certificates</h1>
+  <p class="page-header__sub">Cert expiry is checked daily. Add a domain to start tracking.</p>
+</div>
+
+<section class="section">
+  <form method="POST" action="/ssl/add" class="inline-form">
+    <input class="field__input" type="text" name="domain"
+           placeholder="example.com" autocomplete="off" required>
+    <button type="submit" class="btn btn--primary btn--sm">+ add domain</button>
+  </form>
+</section>
+
+<section class="section">
+  {{with .Data}}
+  {{if .}}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>domain</th>
+        <th>status</th>
+        <th>expires</th>
+        <th>days</th>
+        <th>last checked</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+    {{range .}}
+    <tr>
+      <td class="td-mono">{{.Domain}}</td>
+      <td>
+        {{if .IsValid}}
+          {{if gt .DaysRemaining 30}}<span class="badge badge--ok">OK</span>
+          {{else if ge .DaysRemaining 14}}<span class="badge badge--warn">EXPIRING</span>
+          {{else}}<span class="badge badge--err">CRITICAL</span>
+          {{end}}
+        {{else if .CheckError}}
+          <span class="badge badge--err">ERROR</span>
+        {{else}}
+          <span class="badge badge--dim">PENDING</span>
+        {{end}}
+      </td>
+      <td class="td-mono">{{if .IsValid}}{{formatDate .ExpiresAt}}{{else}}&mdash;{{end}}</td>
+      <td class="td-mono">
+        {{if .IsValid}}{{.DaysRemaining}}d
+        {{else if .CheckError}}<span class="text-err" title="{{.CheckError}}">error</span>
+        {{else}}&mdash;{{end}}
+      </td>
+      <td class="text-dim">
+        {{if .LastCheckedAt.IsZero}}never{{else}}{{ago .LastCheckedAt}}{{end}}
+      </td>
+      <td>
+        <form method="POST" action="/ssl/delete" style="display:inline">
+          <input type="hidden" name="id" value="{{.ID}}">
+          <button type="submit" class="btn-link btn-link--danger"
+                  onclick="return confirm('Remove {{.Domain}}?')">remove</button>
+        </form>
+      </td>
+    </tr>
+    {{end}}
+    </tbody>
+  </table>
+  {{else}}
+  <p class="muted">No domains yet. Add one above to start tracking SSL expiry.</p>
+  {{end}}
+  {{end}}
+</section>
+{{end}}

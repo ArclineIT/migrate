@@ -1,0 +1,55 @@
+{{define "content"}}
+<div class="page-header">
+  <p class="page-header__label">support</p>
+  <h1 class="page-header__title">Tickets</h1>
+</div>
+
+<section class="section">
+  <div class="term-window term-window--narrow">
+    <div class="term-header">
+      <div class="term-controls"><button class="term-btn term-btn--close">✕</button><button class="term-btn">−</button><button class="term-btn">□</button></div>
+      <span class="term-title">new-ticket</span>
+    </div>
+    <div class="term-body">
+      <form method="POST" action="/tickets/new" class="ticket-form">
+        <div class="field">
+          <label class="field__label" for="subject">subject</label>
+          <input class="field__input" type="text" id="subject" name="subject"
+                 placeholder="Brief description of the issue" required>
+        </div>
+        <div class="field">
+          <label class="field__label" for="body">message</label>
+          <textarea class="field__textarea" id="body" name="body" rows="5"
+                    placeholder="Describe the issue in detail..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn--primary btn--sm">open ticket</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <h2 class="section__title">Your Tickets</h2>
+  {{with .Data}}
+  {{if .}}
+  <table class="table">
+    <thead>
+      <tr><th>#</th><th>subject</th><th>status</th><th>updated</th></tr>
+    </thead>
+    <tbody>
+    {{range .}}
+    <tr>
+      <td class="text-dim td-mono">#{{.ID}}</td>
+      <td><a href="/tickets/{{.ID}}" class="link">{{.Subject}}</a></td>
+      <td><span class="badge badge--{{.Status}}">{{.Status}}</span></td>
+      <td class="text-dim">{{ago .UpdatedAt}}</td>
+    </tr>
+    {{end}}
+    </tbody>
+  </table>
+  {{else}}
+  <p class="muted">No tickets yet.</p>
+  {{end}}
+  {{end}}
+</section>
+{{end}}

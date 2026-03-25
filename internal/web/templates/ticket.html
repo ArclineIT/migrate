@@ -1,0 +1,43 @@
+{{define "content"}}
+{{with .Data}}
+<div class="page-header">
+  <p class="page-header__label"><a href="/tickets" class="link">tickets</a> / #{{.Ticket.ID}}</p>
+  <h1 class="page-header__title">{{.Ticket.Subject}}</h1>
+  <span class="badge badge--{{.Ticket.Status}}">{{.Ticket.Status}}</span>
+</div>
+
+<section class="section">
+  <div class="thread">
+    {{range .Messages}}
+    <div class="message {{if .FromAdmin}}message--admin{{else}}message--client{{end}}">
+      <div class="message__meta">
+        <span class="message__from">{{if .FromAdmin}}arcline support{{else}}you{{end}}</span>
+        <span class="message__time text-dim">{{formatTime .CreatedAt}}</span>
+      </div>
+      <div class="message__body">{{.Body}}</div>
+    </div>
+    {{end}}
+  </div>
+
+  {{if ne (print .Ticket.Status) "closed"}}
+  <form method="POST" action="/tickets/{{.Ticket.ID}}/reply" class="reply-form">
+    <div class="field">
+      <label class="field__label" for="body">reply</label>
+      <textarea class="field__textarea" id="body" name="body" rows="4"
+                placeholder="Add a message..." required></textarea>
+    </div>
+    <div class="reply-actions">
+      <button type="submit" class="btn btn--primary btn--sm">send reply</button>
+      {{if $.IsAdmin}}
+      <label class="checkbox-label">
+        <input type="checkbox" name="close" value="1"> close ticket after reply
+      </label>
+      {{end}}
+    </div>
+  </form>
+  {{else}}
+  <p class="muted">This ticket is closed.</p>
+  {{end}}
+</section>
+{{end}}
+{{end}}

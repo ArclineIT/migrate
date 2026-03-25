@@ -1,0 +1,32 @@
+{{define "content"}}
+<div class="login-wrap">
+  <div class="term-window login-box">
+    <div class="term-header">
+      <div class="term-controls">
+        <button class="term-btn term-btn--close">✕</button>
+        <button class="term-btn">−</button>
+        <button class="term-btn">□</button>
+      </div>
+      <span class="term-title">set-new-password</span>
+    </div>
+    <div class="term-body">
+      {{with .Data}}{{if .Error}}<p class="login-error">{{.Error}}</p>{{end}}{{end}}
+
+      <form method="POST" action="/reset" class="login-form">
+        <input type="hidden" name="token" value="{{with .Data}}{{.Token}}{{end}}">
+        <div class="field">
+          <label class="field__label" for="password">new password</label>
+          <input class="field__input" type="password" id="password" name="password"
+                 autocomplete="new-password" minlength="8" autofocus required>
+        </div>
+        <div class="field">
+          <label class="field__label" for="confirm">confirm password</label>
+          <input class="field__input" type="password" id="confirm" name="confirm"
+                 autocomplete="new-password" minlength="8" required>
+        </div>
+        <button type="submit" class="btn btn--primary btn--full">set new password</button>
+      </form>
+    </div>
+  </div>
+</div>
+{{end}}

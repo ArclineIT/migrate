@@ -1,0 +1,22 @@
+{{define "content"}}
+<div class="login-wrap">
+  <div class="term-window login-box">
+    <div class="term-header">
+      <div class="term-controls">
+        <button class="term-btn term-btn--close">✕</button>
+        <button class="term-btn">−</button>
+        <button class="term-btn">□</button>
+      </div>
+      <span class="term-title">404</span>
+    </div>
+    <div class="term-body">
+      <p class="login-prompt">$ find / -name "{{"{{"}}/* path not found */}}"</p>
+      <p style="font-size:var(--font-size-2xl);font-weight:700;color:var(--text-bright);margin:.5rem 0">404</p>
+      <p style="color:var(--text-dim);font-size:var(--font-size-md);margin-bottom:1.5rem">
+        That page doesn't exist.
+      </p>
+      <a href="/dashboard" class="btn btn--ghost btn--sm">← back to dashboard</a>
+    </div>
+  </div>
+</div>
+{{end}}

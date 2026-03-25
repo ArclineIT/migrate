@@ -1,0 +1,32 @@
+{{define "content"}}
+<div class="login-wrap">
+  <div class="term-window login-box">
+    <div class="term-header">
+      <div class="term-controls">
+        <button class="term-btn term-btn--close">✕</button>
+        <button class="term-btn">−</button>
+        <button class="term-btn">□</button>
+      </div>
+      <span class="term-title">reset-password</span>
+    </div>
+    <div class="term-body">
+      <p class="login-prompt">Enter the email address on your account and we'll send a reset link.</p>
+
+      {{with .Data}}{{if .Error}}<p class="login-error">{{.Error}}</p>{{end}}
+      {{if .Success}}<p class="login-success">{{.Success}}</p>{{end}}{{end}}
+
+      <form method="POST" action="/forgot" class="login-form">
+        <div class="field">
+          <label class="field__label" for="email">email address</label>
+          <input class="field__input" type="email" id="email" name="email"
+                 autocomplete="email" autofocus required>
+        </div>
+        <button type="submit" class="btn btn--primary btn--full">send reset link</button>
+      </form>
+      <p class="login-prompt" style="margin-top:1rem">
+        <a href="/login" class="link">← back to login</a>
+      </p>
+    </div>
+  </div>
+</div>
+{{end}}

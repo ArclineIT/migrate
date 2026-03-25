@@ -17,10 +17,10 @@ log viewer. Sits alongside or integrates with WHMCS for billing.
 - Dashboard shows all domains with expiry date + days remaining
 - Color coding: green >30d, amber 14-30d, red <14d
 - Email alerts: 30d, 14d, 7d before expiry
-- [ ] Domain management (add/remove/verify ownership via DNS TXT)
-- [ ] Background cert checker (goroutine + ticker)
-- [ ] Alert email templates
-- [ ] Dashboard view
+- [x] Domain management (add/remove) — ownership verify via DNS TXT not implemented
+- [x] Background cert checker (goroutine + ticker)
+- [ ] Alert email templates (30/14/7 day notifications not wired up)
+- [x] Dashboard view
 
 ### 2. One-Click Static Deployment
 - Customer connects GitLab repo (OAuth) or uploads a zip
@@ -47,23 +47,23 @@ log viewer. Sits alongside or integrates with WHMCS for billing.
 - Simple ticket system (open, in-progress, closed)
 - Customer creates ticket → email notification to blake@arclineit.com
 - Blake replies via email → reply appears in ticket thread
-- [ ] Ticket CRUD
+- [x] Ticket CRUD
 - [ ] Email-in (IMAP polling or inbound SMTP hook)
-- [ ] Email-out (SMTP on ticket create/reply)
-- [ ] Ticket list + thread view
+- [x] Email-out (SMTP on ticket create/reply)
+- [x] Ticket list + thread view
 
 ## Auth
-- [ ] Register / login / logout
-- [ ] Password reset (email link, 1h expiry)
+- [x] Register / login / logout
+- [x] Password reset (email link, 1h expiry)
 - [ ] TOTP 2FA (optional, QR code enrollment)
-- [ ] Session management (secure cookie, server-side store)
+- [x] Session management (secure cookie, server-side store)
 
 ## Tasks (phase 1 — MVP)
-- [ ] Project scaffold (Go + embedded FS for templates/assets)
-- [ ] Database schema (users, domains, deployments, tickets, sessions)
-- [ ] Auth system (register, login, sessions, password reset)
-- [ ] SSL dashboard (domain add/verify, cert check, expiry display)
-- [ ] Basic ticket system
-- [ ] Arcline design system applied to all views
-- [ ] systemd unit + nginx reverse proxy config
-- [ ] README: deployment guide, env vars reference
+- [x] Project scaffold (Go + embedded FS for templates/assets)
+- [x] Database schema (users, domains, deployments, tickets, sessions)
+- [x] Auth system (register, login, sessions, password reset)
+- [x] SSL dashboard (domain add, cert check, expiry display) — DNS TXT verify pending
+- [x] Basic ticket system
+- [x] Arcline design system applied to all views
+- [x] systemd unit + nginx reverse proxy config
+- [x] README: deployment guide, env vars reference
