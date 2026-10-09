@@ -1,0 +1,58 @@
+# AI review of pull requests: PR-Agent asks DeepSeek and posts what it finds as
+# a comment from a bot account. Setup, and the two secrets this needs, are in
+# homelab-infra, docs/forge.md, under "AI review".
+name: PR review
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  review:
+    runs-on: docker
+    steps:
+      - name: Review
+        env:
+          # Pinned: `latest` moves on every PR-Agent release.
+          PR_AGENT_IMAGE: pragent/pr-agent:0.47.0
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          # Read by PR-Agent as SECTION__KEY. Forgejo speaks Gitea's API.
+          CONFIG__GIT_PROVIDER: gitea
+          CONFIG__MODEL: deepseek/deepseek-chat
+          # The default fallback is an OpenAI model, and there is no key for it.
+          CONFIG__FALLBACK_MODELS: '["deepseek/deepseek-chat"]'
+          GITEA__URL: ${{ github.server_url }}
+          GITEA__PERSONAL_ACCESS_TOKEN: ${{ secrets.PR_AGENT_FORGE_TOKEN }}
+          DEEPSEEK__KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          # Labels need write access to the repository; the bot only has read.
+          PR_REVIEWER__ENABLE_REVIEW_LABELS_SECURITY: "false"
+          PR_REVIEWER__ENABLE_REVIEW_LABELS_EFFORT: "false"
+        run: |
+          set -euo pipefail
+          # Empty on a pull request from a fork, which is given no secrets.
+          missing=""
+          [ -n "$GITEA__PERSONAL_ACCESS_TOKEN" ] || missing="$missing PR_AGENT_FORGE_TOKEN"
+          [ -n "$DEEPSEEK__KEY" ] || missing="$missing DEEPSEEK_API_KEY"
+          if [ -n "$missing" ]; then
+            echo "secret not set:$missing - see docs/forge.md in homelab-infra" >&2
+            exit 1
+          fi
+
+          # PR-Agent runs beside this job in dind, not inside it, so it inherits
+          # nothing from the runner's --add-host. Without this every API call
+          # leaves the network for Cloudflare and comes back through the tunnel.
+          forge_host="${GITEA__URL#*://}"
+          forge_host="${forge_host%%/*}"
+          forge_ip="$(getent hosts "$forge_host" | awk '{print $1; exit}' || true)"
+          if [ -z "$forge_ip" ]; then
+            echo "cannot resolve $forge_host from the job container" >&2
+            exit 1
+          fi
+
+          docker run --rm --add-host "$forge_host:$forge_ip" \
+            -e CONFIG__GIT_PROVIDER -e CONFIG__MODEL -e CONFIG__FALLBACK_MODELS \
+            -e GITEA__URL -e GITEA__PERSONAL_ACCESS_TOKEN -e DEEPSEEK__KEY \
+            -e PR_REVIEWER__ENABLE_REVIEW_LABELS_SECURITY \
+            -e PR_REVIEWER__ENABLE_REVIEW_LABELS_EFFORT \
+            "$PR_AGENT_IMAGE" \
+            --pr_url "${GITEA__URL%/}/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" review
